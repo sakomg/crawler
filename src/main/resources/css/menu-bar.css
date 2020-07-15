@@ -1,0 +1,12 @@
+.menu .label
+{
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+}
+
+.menu-item .label
+{
+    -fx-text-fill: black;
+    -fx-font-family: "Arial";
+}
+
