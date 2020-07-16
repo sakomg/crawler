@@ -18,8 +18,8 @@ public class Spider {
      * @param maxPagesToSearch - Максимальное кол-во проверяемых страниц
      */
 
-    public void search(String url, String searchWord, int maxPagesToSearch) {
-        SpiderLeg leg = new SpiderLeg();
+    public String search(String url, String searchWord, int maxPagesToSearch) {
+        SpiderLeg spiderLeg = new SpiderLeg();
         while (this.pagesVisited.size() < maxPagesToSearch) {
             String currentUrl;
             if (this.pagesToVisit.isEmpty()) {
@@ -28,14 +28,14 @@ public class Spider {
             } else {
                 currentUrl = this.nextUrl();
             }
-            leg.crawl(currentUrl);
-            boolean success = leg.searchForWord(searchWord);
-            if (success) {
-                System.out.println(String.format("***Success*** Word %s found at %s", searchWord, currentUrl));
+            spiderLeg.crawl(currentUrl);
+            int quantitySearchWord = Integer.parseInt(spiderLeg.searchForWord(searchWord).substring(32));
+            if (quantitySearchWord > 0) {
+                 return String.format("\n***Success*** Word %s found at %s", searchWord, currentUrl);
             }
-            this.pagesToVisit.addAll(leg.getLinks());
+            this.pagesToVisit.addAll(spiderLeg.getLinks());
         }
-        System.out.println("\n***Done*** Visited " + this.pagesVisited.size() + " web page(s)");
+        return "\n\n***Done*** Visited " + this.pagesVisited.size() + " web page(s)";
     }
 
     /**

@@ -11,17 +11,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CrawlerController implements Initializable {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private VBox headPane;
@@ -49,18 +42,23 @@ public class CrawlerController implements Initializable {
         Spider spider = new Spider();
         SpiderLeg spiderLeg = new SpiderLeg();
 
-        maxPages.getItems().addAll(1,2,3,4,5,10,15,20,25);
+        maxPages.getItems().addAll(1,2,5,10,20);
         maxPages.setPromptText("Select pages");
 
         startSearch.setOnAction(action -> {
             final String textStartPage = startPage.getText();
             final String searchFieldText = searchText.getText();
             final int comboMaxPages = maxPages.getValue();
-            if (startPage.getText().equals("") || searchText.getText().equals("")) {
+            if (textStartPage.equals("") || searchFieldText.equals("")) {
                 showAlertWithoutHeaderText();
             } else {
                 try {
                     spider.search(textStartPage, searchFieldText, comboMaxPages);
+                    printOnList(spiderLeg.connectToWebPage(textStartPage));
+                    printOnList(spiderLeg.crawl(textStartPage));
+                    printOnList(spiderLeg.checkNullHtmlDocument(searchFieldText));
+                    printOnList(spiderLeg.searchForWord(searchFieldText));
+                    printOnList(spider.search(textStartPage, searchFieldText, comboMaxPages));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -83,4 +81,5 @@ public class CrawlerController implements Initializable {
     public void printOnList(String str) {
         Platform.runLater(() -> resultList.appendText(str));
     }
+
 }
