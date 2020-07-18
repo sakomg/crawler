@@ -5,22 +5,28 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 public class SpiderLeg {
-
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
+    private static final String DATA_FILE = "src/main/resources/links/data.csv";
     private final List<String> links = new LinkedList<>();
     private Document htmlDocument;
+
+    /**
+     * @param url - посещаемый URL
+     * @return информация о результате соеденения
+     */
 
     public String connectToWebPage(String url) throws IOException {
         Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
         this.htmlDocument = connection.get();
         if (connection.response().statusCode() == 200) {
-            return "\n***OK*** Received web page at " + url;
+            return "\n--------------------------------------\n***OK*** Received web page at " + url;
         } else if (!connection.response().contentType().contains("text/html")) {
             return "***Fail*** Retrieved something other than HTML";
         } else
@@ -28,11 +34,8 @@ public class SpiderLeg {
     }
 
     /**
-     * Эта часть выполняет всю работу. Он делает HTTP-запрос, проверяет ответ, а затем
-     * собирает все ссылки на странице. Выполните searchForWord после успешного сканирования
-     *
      * @param url - Посещаемый URL
-     * @return было ли сканирование успешным
+     * @return кол-во найденных ссылок или же сообщение об их отсутствии
      */
 
     public String crawl(String url) {
@@ -41,6 +44,7 @@ public class SpiderLeg {
             Elements linksOnPage = htmlDocument.select("a[href]");
             for (Element link : linksOnPage) {
                 this.links.add(link.absUrl("href"));
+                writeLinksInCSVFile(link.absUrl("href") + "\n", DATA_FILE);
             }
             return "\nFound (" + linksOnPage.size() + ") links";
         } catch (IOException ioe) {
@@ -49,14 +53,11 @@ public class SpiderLeg {
     }
 
     /**
-     * Выполняет поиск в теле HTML-документа, который был получен.
-     * Этот метод следует вызывать только после успешного сканирования.
-     *
-     * @param searchWord - Слово или строка для поиска
-     * @return было ли найдено слово
+     * @param searchWord - слово или строка для поиска
+     * @return кол-во найденных слов
      */
 
-    public String searchForWord(String searchWord) {
+    public String countSearchForWord(String searchWord) {
         int countSearchWord = 0;
         checkNullHtmlDocument(searchWord);
         final String[] wordWithText = searchGivenWord(htmlDocument.text());
@@ -65,8 +66,13 @@ public class SpiderLeg {
                 countSearchWord++;
             }
         }
-        return "\n***Good*** Quantity find word: " + countSearchWord;
+        return "\n***End*** Quantity find word: " + countSearchWord;
     }
+
+    /**
+     * Проверка полученной html страницы на null
+     * @param searchWord - слово или строка для поиска
+     */
 
     public String checkNullHtmlDocument(String searchWord) {
         if (this.htmlDocument == null) {
@@ -75,18 +81,43 @@ public class SpiderLeg {
         return "\nSearching for the word " + searchWord + "...";
     }
 
+    /**
+     * @param html - данные содержащиеся на странице
+     * @return кол-во слов на странице
+     */
+
     public int countWords(String html) {
         Document dom = Jsoup.parse(html);
         return dom.text().split(" ").length;
     }
+
+    /**
+     * @param html - данные содержащиеся на странице
+     * @return полное содержимое страницы с выделенными словами
+     */
 
     public String[] searchGivenWord(String html) {
         Document document = Jsoup.parse(html, "UTF-8");
         return document.text().split(" ");
     }
 
+    /**
+     * @return найденные ссылки
+     */
+
     public List<String> getLinks() {
         return this.links;
+    }
+
+    /**
+     * @param buffer - данные, которые будут записаны в файл
+     * @param path - место расположения csv-файла для записи ссылок
+     */
+
+    public void writeLinksInCSVFile(String buffer, String path) throws IOException {
+        FileWriter wFile = new FileWriter(path, true);
+        wFile.write(buffer);
+        wFile.close();
     }
 
 }

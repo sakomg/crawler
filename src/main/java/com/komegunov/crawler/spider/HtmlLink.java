@@ -1,4 +1,4 @@
-package com.komegunov.crawler.extractor;
+package com.komegunov.crawler.spider;
 
 public class HtmlLink {
 

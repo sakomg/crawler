@@ -9,7 +9,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class HeadApp extends Application {
-
     public static void main(String[] args) {
         launch(args);
     }
