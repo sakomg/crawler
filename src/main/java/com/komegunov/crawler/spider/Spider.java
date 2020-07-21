@@ -11,6 +11,20 @@ public class Spider {
     SpiderLeg spiderLeg = new SpiderLeg();
 
     /**
+     * @param searchWord - Слово или строка по которой происходит поиск
+     * @param currentUrl - текущий URL адрес
+     */
+
+    public String checkQuantitySearchWord(String searchWord, String currentUrl) {
+        int quantitySearchWord = spiderLeg.countSearchForWord(searchWord);
+        if (quantitySearchWord > 0) {
+            return String.format("\n***Success*** Word %s found at %s", searchWord, currentUrl);
+        } else {
+            return "\n***Ooops*** On this page zero input words...";
+        }
+    }
+
+    /**
      * @param url - Начальная точка для поиска
      * @param maxPagesToSearch - Максимальное кол-во проверяемых страниц
      */
@@ -25,23 +39,9 @@ public class Spider {
                 currentUrl = this.nextUrl();
             }
             spiderLeg.crawl(currentUrl);
+            this.pagesToVisit.addAll(spiderLeg.getLinks());
         }
         return "\n\n***Done*** Visited " + this.pagesVisited.size() + " web page(s)";
-    }
-
-    /**
-     * @param searchWord - Слово или строка по которой происходит поиск
-     * @param currentUrl - текущий URL адрес
-     */
-
-    public String checkQuantitySearchWord(String searchWord, String currentUrl) {
-        int quantitySearchWord = Integer.parseInt(spiderLeg.countSearchForWord(searchWord).substring(32));
-        this.pagesToVisit.addAll(spiderLeg.getLinks());
-        if (quantitySearchWord == 0) {
-            return "\n***Ooops*** On this page zero input words...";
-        } else {
-            return String.format("\n***Success*** Word %s found at %s", searchWord, currentUrl);
-        }
     }
 
     /**

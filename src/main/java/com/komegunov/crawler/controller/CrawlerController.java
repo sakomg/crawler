@@ -49,6 +49,8 @@ public class CrawlerController {
 
     private final Desktop desktop = Desktop.getDesktop();
 
+    private static final String LINKS_CSV_FILE = "C:\\Users\\aleko\\Desktop\\crawler\\src\\main\\resources\\links";
+
     @FXML
     public void initialize() {
         Spider spider = new Spider();
@@ -62,15 +64,19 @@ public class CrawlerController {
             final String textStartPage = startPage.getText();
             final String searchFieldText = searchText.getText();
             final int comboMaxPages = maxPages.getValue();
-            if (textStartPage.equals("") || searchFieldText.equals("")) {
+            if (textStartPage.equals("") || searchFieldText.equals("") || maxPages.getItems().isEmpty()) {
                 showAlertWithoutHeaderText();
             } else {
                 try {
+                    clearResultList();
+                    spiderLeg.crawl(textStartPage);
+                    spiderLeg.countSearchForWord(searchFieldText);
+                    spider.checkQuantitySearchWord(searchFieldText, textStartPage);
                     spider.search(textStartPage, comboMaxPages);
                     printOnList(spiderLeg.connectToWebPage(textStartPage));
                     printOnList(spiderLeg.crawl(textStartPage));
                     printOnList(spiderLeg.checkNullHtmlDocument(searchFieldText));
-                    printOnList(spiderLeg.countSearchForWord(searchFieldText));
+                    printOnList(spiderLeg.displayCountSearchWord(searchFieldText));
                     printOnList(spider.checkQuantitySearchWord(searchFieldText, textStartPage));
                     printOnList(spider.search(textStartPage, comboMaxPages));
                 } catch (Exception e) {
@@ -97,6 +103,9 @@ public class CrawlerController {
             }
         });
 
+        fileChooser.setInitialDirectory(new File(LINKS_CSV_FILE));
+        fileChooser.setTitle("Open CSV file");
+
         stopSearch.setOnAction(action -> {
 
         });
@@ -112,5 +121,9 @@ public class CrawlerController {
 
     public void printOnList(String str) {
         Platform.runLater(() -> resultList.appendText(str));
+    }
+
+    public void clearResultList() {
+        resultList.clear();
     }
 }

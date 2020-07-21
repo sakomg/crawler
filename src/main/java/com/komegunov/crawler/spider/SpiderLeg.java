@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -15,23 +16,8 @@ public class SpiderLeg {
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
     private static final String DATA_FILE = "src/main/resources/links/data.csv";
     private final List<String> links = new LinkedList<>();
-    private Document htmlDocument;
-
-    /**
-     * @param url - посещаемый URL
-     * @return информация о результате соеденения
-     */
-
-    public String connectToWebPage(String url) throws IOException {
-        Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
-        this.htmlDocument = connection.get();
-        if (connection.response().statusCode() == 200) {
-            return "\n--------------------------------------\n***OK*** Received web page at " + url;
-        } else if (!connection.response().contentType().contains("text/html")) {
-            return "***Fail*** Retrieved something other than HTML";
-        } else
-            return "***Undefined***";
-    }
+    private Document htmlDocument = new Document("");
+    private int countSearchWord = 0;
 
     /**
      * @param url - Посещаемый URL
@@ -44,7 +30,7 @@ public class SpiderLeg {
             Elements linksOnPage = htmlDocument.select("a[href]");
             for (Element link : linksOnPage) {
                 this.links.add(link.absUrl("href"));
-                writeLinksInCSVFile(link.absUrl("href") + "\n", DATA_FILE);
+                writeLinksInCSVFile(   link.absUrl("href").intern() + "\n", DATA_FILE);
             }
             return "\nFound (" + linksOnPage.size() + ") links";
         } catch (IOException ioe) {
@@ -53,20 +39,35 @@ public class SpiderLeg {
     }
 
     /**
+     * @param url - посещаемый URL
+     * @return информация о результате соеденения
+     */
+
+    public String connectToWebPage(String url) throws IOException {
+        Connection connection = Jsoup.connect(url).userAgent(USER_AGENT);
+        this.htmlDocument = connection.get();
+        if (connection.response().statusCode() == 200) {
+            return "***OK*** Received web page at " + url;
+        } else if (!connection.response().contentType().contains("text/html")) {
+            return "***Fail*** Retrieved something other than HTML";
+        } else
+            return "***Undefined***";
+    }
+
+    /**
      * @param searchWord - слово или строка для поиска
      * @return кол-во найденных слов
      */
 
-    public String countSearchForWord(String searchWord) {
-        int countSearchWord = 0;
+    public int countSearchForWord(String searchWord) {
         checkNullHtmlDocument(searchWord);
-        final String[] wordWithText = searchGivenWord(htmlDocument.text());
+        final String[] wordWithText = parseDocumentOnTheWord(htmlDocument.text());
         for (int i = 0; i < countWords(htmlDocument.text()); i++) {
             if (wordWithText[i].equals(searchWord)) {
                 countSearchWord++;
             }
         }
-        return "\n***End*** Quantity find word: " + countSearchWord;
+        return countSearchWord;
     }
 
     /**
@@ -96,7 +97,7 @@ public class SpiderLeg {
      * @return полное содержимое страницы с выделенными словами
      */
 
-    public String[] searchGivenWord(String html) {
+    public String[] parseDocumentOnTheWord(String html) {
         Document document = Jsoup.parse(html, "UTF-8");
         return document.text().split(" ");
     }
@@ -109,6 +110,10 @@ public class SpiderLeg {
         return this.links;
     }
 
+    public String displayCountSearchWord(String searchWord) {
+        return "\n***End*** Quantity find word: " + countSearchForWord(searchWord);
+    }
+
     /**
      * @param buffer - данные, которые будут записаны в файл
      * @param path - место расположения csv-файла для записи ссылок
@@ -119,5 +124,4 @@ public class SpiderLeg {
         wFile.write(buffer);
         wFile.close();
     }
-
 }
