@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="headPane" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.komegunov.crawler.controller.CrawlerController">
+<VBox fx:id="headPane" prefHeight="400.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.komegunov.crawler.controller.CrawlerController">
   <children>
     <MenuBar prefHeight="0.0" prefWidth="689.0" style="-fx-background-color: #168FC1;" stylesheets="/css/menu-bar.css" VBox.vgrow="NEVER">
       <menus>
@@ -75,7 +75,7 @@
             <JFXButton id="windows" fx:id="stopSearch" cancelButton="true" layoutX="135.0" layoutY="324.0" prefHeight="32.0" prefWidth="110.0" ripplerFill="#6e328c" stylesheets="/css/button.css" text="Stop" textOverrun="WORD_ELLIPSIS" />
             <TextArea fx:id="resultList" layoutX="258.0" layoutY="17.0" prefHeight="306.0" prefWidth="376.0" />
             <JFXComboBox fx:id="maxPages" layoutX="15.0" layoutY="191.0" prefHeight="25.0" prefWidth="230.0" />
-            <JFXProgressBar fx:id="progressLoadFindLinks" layoutX="258.0" layoutY="335.0" prefHeight="21.0" prefWidth="376.0" stylesheets="/css/progress-bar.css" />
+            <JFXProgressBar fx:id="progressLoadFindLinks" layoutX="258.0" layoutY="335.0" prefHeight="21.0" prefWidth="376.0" progress="0.0" secondaryProgress="0.0" stylesheets="/css/progress-bar.css" />
             <JFXButton id="windows" fx:id="openCsvFile" layoutX="14.0" layoutY="280.0" prefHeight="32.0" prefWidth="231.0" stylesheets="/css/button.css" text="Open " />
             <Text layoutX="84.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CSV file with links">
                <font>

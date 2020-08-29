@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class CrawlerController {
 
     private final Desktop desktop = Desktop.getDesktop();
 
-    private static final String LINKS_CSV_FILE = "C:\\Users\\aleko\\Desktop\\crawler\\src\\main\\resources\\links";
+    private static final String LINKS_CSV_FILE = "D:\\jdev\\crawler\\src\\main\\resources\\links\\data.csv";
 
     @FXML
     public void initialize() {
@@ -93,7 +94,7 @@ public class CrawlerController {
         );
 
         openCsvFile.setOnAction(action -> {
-            file = fileChooser.showOpenDialog(null);
+            file = fileChooser.showOpenDialog(openCsvFile.getScene().getWindow());
             if (file != null) {
                 try {
                     desktop.open(file);
